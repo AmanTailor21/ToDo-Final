@@ -15,8 +15,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"
             type="text/javascript"></script>
     <title>ToDo</title>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+            async defer>
+    </script>
 </head>
 <body>
+@include('sweetalert::alert')
 <div class="container-fluid shadow-sm pb-1">
     <div class="row">
         <div class="col-lg-1  mt-3">
@@ -24,58 +28,30 @@
         </div>
         <div class="col-lg-11">
             <div class="form-group">
-                <input type="text" class="form-control m-1 mt-3" placeholder="Search...">
+                <input type="text" class="form-control m-1 mt-3" id="search" placeholder="Search...">
             </div>
         </div>
     </div>
 </div>
 <div class="m-3">
-    @if(isset($todos))
-        <form action="/">
-            <input type="submit" class="btn btn-info" value="ADD TASK">
-        </form>
-    @else
-        <div class="p-4"></div>
-    @endif
+    <input type="submit" class="btn btn-info" id="btnAdd" style="display: none;" value="ADD TASK">
 </div>
 <div class="card m-3 shadow-sm" style="height: 700px;">
     <div class="row">
         <div class="col-lg-6" id="subDiv" style="height:700px;overflow-y: scroll;">
 
-            @foreach($todo as $task)
-                <div class="row m-3 border-bottom">
-                    <div class="col-lg-1 m-3">
-                        <input type="checkbox">
-                    </div>
-                    <div class="col-lg-8">
 
-                        @if($task->mark == 1)
-                            <b><strike><a href="/edit/{{$task->id}}"
-                                          style="color: #1a202c;">{{$task->title}}</a></strike></b>
-                            <p><strike>{{$task->notes}}</strike></p>
-                        @else
-                            <b><a href="/edit/{{$task->id}}"
-                                  style="color: #1a202c;">{{$task->title}}</a></b>
-                            <p>{{$task->notes}}</p>
-                        @endif
-                    </div>
-                    <div class="col-lg-2 m-3">
-                        <i class="fa fa-star-o" aria-hidden="true"></i>
-                    </div>
-                </div>
-            @endforeach
         </div>
         <div class="col-lg-6">
 
 
-            <form method="post" action="{{ $action }}">
+            <form method="post" action="/store" id="form">
                 @csrf
 
                 <div class="container-fluid shadow-sm">
                     <div class="row">
                         <div class="col m-3">
-                            <input type="checkbox"
-                                   name="mark" {{ (!empty($todos) &&  $todos["mark"] == 1) ? 'checked' : '' }}>
+                            <input type="checkbox" id="mark" name="mark" {{ (!empty($todos) &&  $todos["mark"] == 1) ? 'checked' : '' }}>
                             <label> Mark as Done</label>
                         </div>
                     </div>
@@ -84,35 +60,31 @@
                     <div class="form-group">
                         <label>Add Title</label>
                         <input type="text" name="title" class="form-control" placeholder="Title"
-                               value="{{ (!empty($todos)) ? $todos["title"] : '' }}">
+                               id="title"  value="{{ (!empty($todos)) ? $todos["title"] : '' }}">
                         @error('title') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
                     <div class="row">
                         <div class="form-group col">
                             <label>Start Date</label>
                             <input type="date" name="start_date" class="form-control" placeholder="Start Date"
-                                   value="{{ (!empty($todos)) ? $todos["start_date"] : '' }}">
+                                   id="start_date" value="{{ (!empty($todos)) ? $todos["start_date"] : '' }}">
                             @error('start_date') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="col">
                             <label>Due Date</label>
                             <input type="date" name="due_date" class="form-control" placeholder="Due Date"
-                                   value="{{ (!empty($todos)) ? $todos["due_date"] : '' }}">
+                                   id="due_date" value="{{ (!empty($todos)) ? $todos["due_date"] : '' }}">
                             @error('due_date') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Add Notes</label>
                         <textarea placeholder="Notes..." name="notes"
-                                  class="form-control">{{ (!empty($todos)) ? $todos["notes"] : '' }}</textarea>
+                                  id="notes" class="form-control">{{ (!empty($todos)) ? $todos["notes"] : '' }}</textarea>
                         @error('notes') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
                     <div>
-                        @if(isset($todos))
-                            <input type="submit" class="btn btn-info" value="UPDATE TASK">
-                        @else
                             <input type="submit" class="btn btn-info" value="SAVE">
-                        @endif
                     </div>
                 </div>
             </form>
@@ -120,7 +92,6 @@
         </div>
     </div>
 </div>
-
-
 </body>
 </html>
+
